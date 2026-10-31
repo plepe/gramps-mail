@@ -10,7 +10,7 @@ const nextYear = year + 1
 const daysInFuture = 31
 
 const events = {}
-const persons = {}
+const entities = {}
 const upcoming = []
 
 fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (err, body) => {
@@ -41,7 +41,34 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
       }
     })
 
-    persons[person.getAttribute('handle')] = item
+    entities[person.getAttribute('handle')] = item
+  })
+
+  Array.from(document.getElementsByTagName('family')).forEach(family => {
+    let person0 = family.querySelector('mother')
+    if (person0) {
+      person0 = person0.getAttribute('hlink')
+    }
+
+    let person1 = family.querySelector('father')
+    if (person1) {
+      person1 = person1.getAttribute('hlink')
+    }
+
+    const item = {
+      id: family.getAttribute('id'),
+      handle: family.getAttribute('handle'),
+      name: (entities[person0] ? entities[person0].name : '?') + ' & ' + (entities[person1] ? entities[person1].name : '?'),
+      events: []
+    }
+
+    Array.from(family.querySelectorAll('eventref')).forEach(eventref => {
+      if (eventref.getAttribute('role') === 'Family') {
+        item.events.push(eventref.getAttribute('hlink'))
+      }
+    })
+
+    entities[family.getAttribute('handle')] = item
   })
 
   Object.values(events).forEach(event => {
@@ -71,8 +98,8 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
         upcoming[days] = []
       }
 
-      const persons = getEventPersons(event.handle)
-      persons.forEach(person => {
+      const entities = getEventEntities(event.handle)
+      entities.forEach(person => {
         upcoming[days].push({
           entity: person,
           event,
@@ -97,8 +124,8 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
   })
 })
 
-function getEventPersons (eventHandle) {
-  return Object.values(persons).filter(person => person.events.includes(eventHandle))
+function getEventEntities (eventHandle) {
+  return Object.values(entities).filter(person => person.events.includes(eventHandle))
 }
 
 function getTextContent (item, selector) {
