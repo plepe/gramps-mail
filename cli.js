@@ -2,9 +2,12 @@
 const fs = require('fs')
 const jsdom = require("jsdom")
 const { JSDOM } = jsdom
+const moment = require('moment')
 
+const today = moment()
 const year = new Date().getFullYear()
 const nextYear = year + 1
+const daysInFuture = 31
 
 fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (err, body) => {
   const dom = new JSDOM(body.toString(), {
@@ -39,7 +42,35 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
   })
 
   Object.values(events).forEach(event => {
+    if (!event.date || event.date.length < 10) {
+      return
+    }
+
     console.log(event.date)
+
+    const d = moment(event.date)
+    console.log(d)
+
+    const n1 = moment(year + event.date.substr(4))
+    const n2 = moment(nextYear + event.date.substr(4))
+
+    const days1 = n1.diff(today, 'days')
+    const days2 = n2.diff(today, 'days')
+    let days = null
+    let anniversary = null
+
+    if (days1 >= 0 && days1 < daysInFuture) {
+      days = days1
+      anniversary = year - event.date.substr(0, 4)
+    }
+    if (days2 >= 0 && days2 < daysInFuture) {
+      days = days2
+      anniversary = nextYear - event.date.substr(0, 4)
+    }
+
+    if (days !== null) {
+      console.log(days, anniversary)
+    }
   })
 })
 
