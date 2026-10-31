@@ -9,26 +9,31 @@ const year = new Date().getFullYear()
 const nextYear = year + 1
 const daysInFuture = 31
 
+const events = {}
+const persons = {}
+const upcoming = []
+
 fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (err, body) => {
   const dom = new JSDOM(body.toString(), {
     contentType: 'application/xml'
   })
   const document = dom.window.document
 
-  const events = {}
   Array.from(document.getElementsByTagName('event')).forEach(event => {
     events[event.getAttribute('handle')] = {
+      handle: event.getAttribute('handle'),
       type: getTextContent(event, 'type'),
       date: getAttribute(event, 'dateval', 'val')
     }
   })
 
-  const persons = {}
   Array.from(document.getElementsByTagName('person')).forEach(person => {
     const nameValue = person.querySelector('name')
 
     const item = {
-      name: getTextContent(nameValue, 'first') + ' ' + getTextContent(nameValue, 'surname'),
+      id: person.getAttribute('id'),
+      handle: person.getAttribute('handle'),
+      name: (getTextContent(nameValue, 'first') ?? '?') + ' ' + getTextContent(nameValue, 'surname'),
       events: []
     }
 
@@ -64,10 +69,37 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
     }
 
     if (days !== null) {
-      console.log(days, anniversary)
+      if (!upcoming[days]) {
+        upcoming[days] = []
+      }
+
+      const persons = getEventPersons(event.handle)
+      persons.forEach(person => {
+        upcoming[days].push({
+          person,
+          event,
+          anniversary
+        })
+      })
     }
   })
+
+  upcoming.forEach((list, days) => {
+    if (!list) {
+      return
+    }
+
+    const date = moment().add(days, 'days')
+
+    console.log(date.format('ll') + ' (in ' + days + ' Tagen)')
+    list.forEach(item => console.log('- ' + item.person.name + ' (' + item.event.type + ', ' + item.anniversary + ' Jahre)'))
+    console.log()
+  })
 })
+
+function getEventPersons (eventHandle) {
+  return Object.values(persons).filter(person => person.events.includes(eventHandle))
+}
 
 function getTextContent (item, selector) {
   const value = item.querySelector(selector)
