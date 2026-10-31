@@ -46,11 +46,6 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
       return
     }
 
-    console.log(event.date)
-
-    const d = moment(event.date)
-    console.log(d)
-
     const n1 = moment(year + event.date.substr(4))
     const n2 = moment(nextYear + event.date.substr(4))
 
