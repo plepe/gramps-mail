@@ -28,12 +28,10 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
   })
 
   Array.from(document.getElementsByTagName('person')).forEach(person => {
-    const nameValue = person.querySelector('name')
-
     const item = {
       id: person.getAttribute('id'),
       handle: person.getAttribute('handle'),
-      name: (getTextContent(nameValue, 'first') ?? '?') + ' ' + getTextContent(nameValue, 'surname'),
+      name: getPersonName(person),
       events: []
     }
 
@@ -115,4 +113,9 @@ function getAttribute (item, selector, attribute) {
   if (value) {
     return value.getAttribute(attribute)
   }
+}
+
+function getPersonName (person) {
+  const nameValue = person.querySelector('name')
+  return (getTextContent(nameValue, 'first') ?? '?') + ' ' + getTextContent(nameValue, 'surname')
 }
