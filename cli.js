@@ -76,7 +76,7 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
       const persons = getEventPersons(event.handle)
       persons.forEach(person => {
         upcoming[days].push({
-          person,
+          entity: person,
           event,
           anniversary
         })
@@ -91,9 +91,11 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
 
     const date = moment().add(days, 'days')
 
-    console.log(date.format('ll') + ' (in ' + days + ' Tagen)')
-    list.forEach(item => console.log('- ' + item.person.name + ' (' + item.event.type + ', ' + item.anniversary + ' Jahre)'))
-    console.log()
+    if (list.length) {
+      console.log(date.format('ll') + ' (in ' + days + ' Tagen)')
+      list.forEach(item => console.log('- ' + item.entity.name + ' (' + item.event.type + ', ' + item.anniversary + ' Jahre)'))
+      console.log()
+    }
   })
 })
 
