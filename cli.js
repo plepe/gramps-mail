@@ -13,6 +13,8 @@ const events = {}
 const entities = {}
 const upcoming = []
 
+const showOnlyEventTypes = ['Birth', 'Death', 'Marriage']
+
 fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (err, body) => {
   const dom = new JSDOM(body.toString(), {
     contentType: 'application/xml'
@@ -20,9 +22,15 @@ fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (er
   const document = dom.window.document
 
   Array.from(document.getElementsByTagName('event')).forEach(event => {
+    const type = getTextContent(event, 'type')
+
+    if (!showOnlyEventTypes.includes(type)) {
+      return
+    }
+
     events[event.getAttribute('handle')] = {
       handle: event.getAttribute('handle'),
-      type: getTextContent(event, 'type'),
+      type,
       date: getAttribute(event, 'dateval', 'val')
     }
   })
