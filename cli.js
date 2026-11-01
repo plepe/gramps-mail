@@ -46,7 +46,7 @@ const translation = JSON.parse(fs.readFileSync('lang/' + args.language + '.json'
 moment.locale(args.language)
 const today = args.today === 'today' ? moment(moment().format('YYYY-MM-DD')) : moment(args.today)
 
-const year = new Date().getFullYear()
+const year = parseInt(moment(today).format('YYYY'))
 const years = [year]
 for (i = 0; i < Math.ceil(daysInFuture / 365); i++) {
   years.push(year + i + 1)
