@@ -5,9 +5,6 @@ const { JSDOM } = jsdom
 const moment = require('moment')
 const ArgumentParser = require('argparse').ArgumentParser
 
-const year = new Date().getFullYear()
-const nextYear = year + 1
-
 const events = {}
 const entities = {}
 const upcoming = []
@@ -48,6 +45,12 @@ const showOnlyEventTypes = args.events ? args.events.split(',') : null
 const translation = JSON.parse(fs.readFileSync('lang/' + args.language + '.json'))
 moment.locale(args.language)
 const today = args.today === 'today' ? moment(moment().format('YYYY-MM-DD')) : moment(args.today)
+
+const year = new Date().getFullYear()
+const years = [year]
+for (i = 0; i < Math.ceil(daysInFuture / 365); i++) {
+  years.push(year + i + 1)
+}
 
 fs.readFile(args.file, (err, body) => {
   const dom = new JSDOM(body.toString(), {
@@ -118,24 +121,16 @@ fs.readFile(args.file, (err, body) => {
       return
     }
 
-    const n1 = moment(year + event.date.substr(4))
-    const n2 = moment(nextYear + event.date.substr(4))
+    const days = years.map(y => {
+      const n = moment(y + event.date.substr(4))
+      const days = n.diff(today, 'days')
 
-    const days1 = n1.diff(today, 'days')
-    const days2 = n2.diff(today, 'days')
-    let days = null
-    let anniversary = null
+      if (days < 0 || days >= daysInFuture) {
+        return
+      }
 
-    if (days1 >= 0 && days1 < daysInFuture) {
-      days = days1
-      anniversary = year - event.date.substr(0, 4)
-    }
-    if (days2 >= 0 && days2 < daysInFuture) {
-      days = days2
-      anniversary = nextYear - event.date.substr(0, 4)
-    }
+      const anniversary = y - event.date.substr(0, 4)
 
-    if (days !== null) {
       if (!upcoming[days]) {
         upcoming[days] = []
       }
@@ -148,7 +143,7 @@ fs.readFile(args.file, (err, body) => {
           anniversary
         })
       })
-    }
+    })
   })
 
   upcoming.forEach((list, days) => {
