@@ -3,6 +3,7 @@ const fs = require('fs')
 const jsdom = require("jsdom")
 const { JSDOM } = jsdom
 const moment = require('moment')
+const ArgumentParser = require('argparse').ArgumentParser
 
 const today = moment()
 const year = new Date().getFullYear()
@@ -13,9 +14,20 @@ const events = {}
 const entities = {}
 const upcoming = []
 
+const parser = new ArgumentParser({
+  add_help: true,
+  description: 'Liest einen Gramps-XML Export und kreiert einen Text mit den nächsten Jahrestagen'
+})
+
+parser.add_argument('file', {
+  help: 'Pfad einer gramps Datei',
+})
+
+const args = parser.parse_args()
+
 const showOnlyEventTypes = ['Birth', 'Death', 'Marriage']
 
-fs.readFile('/home/skunk/Downloads/gramps-web-export-20261031183922.gramps', (err, body) => {
+fs.readFile(args.file, (err, body) => {
   const dom = new JSDOM(body.toString(), {
     contentType: 'application/xml'
   })
