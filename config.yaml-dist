@@ -1,0 +1,11 @@
+smtp:
+  from: Gramps-Mailer <gramps@example.com>
+  host: localhost
+  port: 25
+  secure: false
+  auth:
+    user: example
+    pass: password
+
+mails:
+- to: user@example.com

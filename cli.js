@@ -5,6 +5,7 @@ const jsdom = require("jsdom")
 const { JSDOM } = jsdom
 const moment = require('moment')
 const ArgumentParser = require('argparse').ArgumentParser
+const nodemailer = require("nodemailer")
 const yaml = require('js-yaml')
 
 const events = {}
@@ -60,6 +61,9 @@ for (i = 0; i < Math.ceil(daysInFuture / 365); i++) {
 }
 
 const config = yaml.load(fs.readFileSync('config.yaml'))
+
+// Create a transporter using SMTP
+const transporter = nodemailer.createTransport(config.smtp)
 
 fs.readFile(args.file, (err, body) => {
   body = zlib.gunzip(body, (err, body) => {
@@ -187,7 +191,14 @@ function run (body) {
     text += '\n'
   })
 
-  console.log(text)
+  config.mails.forEach(mail => {
+    transporter.sendMail({
+      from: config.smtp.from, // sender address
+      to: mail.to, // list of recipients
+      subject: "Kommende Jahrestage", // subject line
+      text
+    }, (err) => console.error(err));
+  })
 }
 
 function getEventEntities (eventHandle) {
