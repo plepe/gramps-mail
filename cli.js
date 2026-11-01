@@ -39,6 +39,11 @@ parser.add_argument('-l', '--language', {
   default: 'en'
 })
 
+parser.add_argument('-s', '--select', {
+  help: 'Select certain people from the database (default: all).',
+  default: null
+})
+
 parser.add_argument('--today', {
   help: 'Setze einen alternativen Ausgangs-Tag',
   default: 'today'
@@ -49,7 +54,8 @@ const args = parser.parse_args()
 mailConfig = {
   days: args.days,
   language: args.language,
-  events: args.events
+  events: args.events,
+  select: args.select
 }
 
 loadDatabase (args.file, (err, data) => {

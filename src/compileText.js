@@ -1,6 +1,7 @@
 const moment = require('moment')
 
 const loadTranslation = require('./loadTranslation.js')
+const selected = require('./selected.js')
 
 module.exports = function compileText (data, mailConfig, callback) {
   loadTranslation(mailConfig.language, (err, translation) => {
@@ -24,6 +25,7 @@ function run (data, mailConfig, translation, callback) {
   const entities = data.entities
   const showOnlyEventTypes = mailConfig.events ? mailConfig.events.split(',') : null
   const upcoming = []
+  mailConfig.select = mailConfig.select ? mailConfig.select.split(',') : null
 
   Object.values(events).forEach(event => {
     if (!event.date || event.date.length < 10) {
@@ -48,7 +50,7 @@ function run (data, mailConfig, translation, callback) {
         upcoming[days] = []
       }
 
-      const ents = getEventEntities(entities, event.handle)
+      const ents = getEventEntities(entities, event.handle, mailConfig.select)
       ents.forEach(person => {
         upcoming[days].push({
           entity: person,
@@ -88,6 +90,12 @@ function run (data, mailConfig, translation, callback) {
   callback(null, text)
 }
 
-function getEventEntities (entities, eventHandle) {
-  return Object.values(entities).filter(person => person.events.includes(eventHandle))
+function getEventEntities (entities, eventHandle, select) {
+  return Object.values(entities).filter(person => {
+    if (!selected(person, entities, select)) {
+      return false
+    }
+
+    return person.events.includes(eventHandle)
+  })
 }
