@@ -147,17 +147,15 @@ fs.readFile(args.file, (err, body) => {
   })
 
   upcoming.forEach((list, days) => {
-    if (!list) {
+    if (!list || !list.length) {
       return
     }
 
     const date = moment().add(days, 'days')
 
-    if (list.length) {
-      console.log(date.format('LL') + ' (' + translation['in_days'].replace('%', days) + ')')
-      list.forEach(item => console.log('- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + translation['age'].replace('%', item.anniversary) + ')'))
-      console.log()
-    }
+    console.log(date.format('LL') + ' (' + translation['in_days'].replace('%', days) + ')')
+    list.forEach(item => console.log('- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + translation['age'].replace('%', item.anniversary) + ')'))
+    console.log()
   })
 })
 
