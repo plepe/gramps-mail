@@ -46,12 +46,10 @@ parser.add_argument('--today', {
 
 const args = parser.parse_args()
 
-const showOnlyEventTypes = args.events ? args.events.split(',') : null
-
 mailConfig = {
   days: args.days,
   language: args.language,
-  events: showOnlyEventTypes
+  events: args.events
 }
 
 loadDatabase (args.file, (err, data) => {

@@ -27,8 +27,6 @@ parser.add_argument('-c', '--config', {
 
 const args = parser.parse_args()
 
-const showOnlyEventTypes = args.events ? args.events.split(',') : null
-
 const config = yaml.load(fs.readFileSync('config.yaml'))
 
 config.default = {

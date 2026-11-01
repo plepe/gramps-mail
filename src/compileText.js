@@ -22,10 +22,15 @@ function run (data, mailConfig, translation, callback) {
 
   const events = data.events
   const entities = data.entities
+  const showOnlyEventTypes = mailConfig.events ? mailConfig.events.split(',') : null
   const upcoming = []
 
   Object.values(events).forEach(event => {
     if (!event.date || event.date.length < 10) {
+      return
+    }
+
+    if (showOnlyEventTypes && !showOnlyEventTypes.includes(event.type)) {
       return
     }
 

@@ -23,10 +23,6 @@ function run (body, callback) {
   Array.from(document.getElementsByTagName('event')).forEach(event => {
     const type = getTextContent(event, 'type')
 
-//    if (showOnlyEventTypes && !showOnlyEventTypes.includes(type)) {
-//      return
-//    }
-
     events[event.getAttribute('handle')] = {
       handle: event.getAttribute('handle'),
       type,
