@@ -153,6 +153,7 @@ function run (body) {
     })
   })
 
+  let text = ''
   upcoming.forEach((list, days) => {
     if (!list || !list.length) {
       return
@@ -165,17 +166,20 @@ function run (body) {
       in_days = translation['in_' + days + '_days']
     }
 
-    console.log(date.format('LL') + ' (' + in_days + ')')
+    text += date.format('LL') + ' (' + in_days + ')\n'
     list.forEach(item => {
       let age = translation['age'].replace('%', item.anniversary)
       if (translation['age_' + item.anniversary]) {
         age = translation['age_' + item.anniversary]
       }
 
-      console.log('- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + age + ')')
+      text += '- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + age + ')\n'
     })
-    console.log()
+
+    text += '\n'
   })
+
+  console.log(text)
 }
 
 function getEventEntities (eventHandle) {
