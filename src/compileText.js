@@ -2,6 +2,7 @@ const moment = require('moment')
 
 const loadTranslation = require('./loadTranslation.js')
 const selected = require('./selected.js')
+const evaluateFamilies = require('./evaluateFamilies.js')
 
 module.exports = function compileText (data, mailConfig, callback) {
   loadTranslation(mailConfig.language, (err, translation) => {
@@ -26,6 +27,7 @@ function run (data, mailConfig, translation, callback) {
   const showOnlyEventTypes = mailConfig.events ? mailConfig.events.split(',') : null
   const upcoming = []
   mailConfig.select = mailConfig.select ? mailConfig.select.split(',') : null
+  mailConfig.select = evaluateFamilies(entities, mailConfig.select)
 
   Object.values(events).forEach(event => {
     if (!event.date || event.date.length < 10) {

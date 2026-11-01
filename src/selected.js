@@ -1,4 +1,4 @@
-module.exports = function selected (person, entities, select) {
+function selected (person, entities, select) {
   if (!select) {
     return true
   }
@@ -9,3 +9,5 @@ module.exports = function selected (person, entities, select) {
 
   return false
 }
+
+module.exports = selected 

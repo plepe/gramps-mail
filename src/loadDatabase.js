@@ -61,9 +61,20 @@ function run (body, callback) {
     const item = {
       id: family.getAttribute('id'),
       handle: family.getAttribute('handle'),
+      peopleUp: [],
+      peopleDown: [],
       name: (entities[person0] ? entities[person0].name : '?') + ' & ' + (entities[person1] ? entities[person1].name : '?'),
       events: []
     }
+
+    if (person0) {
+      item.peopleUp.push(person0)
+    }
+    if (person1) {
+      item.peopleUp.push(person1)
+    }
+
+    item.peopleDown = Array.from(family.querySelectorAll('childref')).map(childref => childref.getAttribute('hlink'))
 
     Array.from(family.querySelectorAll('eventref')).forEach(eventref => {
       if (eventref.getAttribute('role') === 'Family') {
