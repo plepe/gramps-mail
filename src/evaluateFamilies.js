@@ -12,18 +12,6 @@ function evaluateFamilies (entities, select) {
     const entity = Object.values(entities).filter(e => e.id === id)[0]
     if (!entity) { return }
 
-    if (entity.peopleUp) {
-      entity.peopleUp.forEach(handle => {
-        select.push(entities[handle].id)
-      })
-    }
-
-    if (entity.peopleDown) {
-      entity.peopleDown.forEach(handle => {
-        select.push(entities[handle].id)
-      })
-    }
-
     if (up) {
       const newUp = up[0] === '+' ? up.substr(1) : up
 
@@ -33,28 +21,15 @@ function evaluateFamilies (entities, select) {
           const e = entities[handle]
 
           const families = Object.values(entities).filter(e => e.peopleDown && e.peopleDown.includes(entity.handle))
-          console.log('F1', families)
 
-          select = select.concat(evaluateFamilies(entities, [e.id + newUp]))
+          select = select.concat(evaluateFamilies(entities, [newUp + e.id]))
         })
       } else {
-        const families = Object.values(entities).filter(e => e.peopleUp && e.peopleUp.includes(entity.handle))
+        const families = Object.values(entities).filter(e => e.peopleDown && e.peopleDown.includes(entity.handle))
 
         families.forEach(family => {
-          family.peopleDown.forEach(handle => {
-            const e = entities[handle]
-
-            select.push(e.id)
-
-            const families = Object.values(entities).filter(e => e.peopleUp && e.peopleUp.includes(entity.handle))
-            families.forEach(f => {
-              select.push(f.id)
-            })
-
-            if (newDown) {
-              select = select.concat(evaluateFamilies(entities, [e.id + newDown]))
-            }
-          })
+          select.push(family.id)
+          select = select.concat(evaluateFamilies(entities, [newUp + family.id]))
         })
       }
     }
@@ -66,7 +41,7 @@ function evaluateFamilies (entities, select) {
       if (entity.peopleDown) {
         entity.peopleDown.forEach(handle => {
           const e = entities[handle]
-
+          select.push(e.id)
           select = select.concat(evaluateFamilies(entities, [e.id + newDown]))
         })
       } else {
@@ -75,17 +50,8 @@ function evaluateFamilies (entities, select) {
         families.forEach(family => {
           family.peopleDown.forEach(handle => {
             const e = entities[handle]
-
             select.push(e.id)
-
-            const families = Object.values(entities).filter(e => e.peopleUp && e.peopleUp.includes(entity.handle))
-            families.forEach(f => {
-              select.push(f.id)
-            })
-
-            if (newDown) {
-              select = select.concat(evaluateFamilies(entities, [e.id + newDown]))
-            }
+            select = select.concat(evaluateFamilies(entities, [e.id + newDown]))
           })
         })
       }
