@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const fs = require('fs')
+const zlib = require('zlib')
 const jsdom = require("jsdom")
 const { JSDOM } = jsdom
 const moment = require('moment')
@@ -53,6 +54,12 @@ for (i = 0; i < Math.ceil(daysInFuture / 365); i++) {
 }
 
 fs.readFile(args.file, (err, body) => {
+  body = zlib.gunzip(body, (err, body) => {
+    run(body)
+  })
+})
+
+function run (body) {
   const dom = new JSDOM(body.toString(), {
     contentType: 'application/xml'
   })
@@ -169,7 +176,7 @@ fs.readFile(args.file, (err, body) => {
     })
     console.log()
   })
-})
+}
 
 function getEventEntities (eventHandle) {
   return Object.values(entities).filter(person => person.events.includes(eventHandle))
