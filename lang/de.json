@@ -3,5 +3,8 @@
   "Death": "Tod",
   "Marriage": "Hochzeit",
   "in_days": "in % Tagen",
+  "in_0_days": "heute",
+  "in_1_days": "morgen",
+  "in_2_days": "übermorgen",
   "age": "% Jahre"
 }

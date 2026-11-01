@@ -3,5 +3,7 @@
   "Death": "Death",
   "Marriage": "Marriage",
   "in_days": "in % days",
+  "in_0_days": "today",
+  "in_1_days": "tomorrow",
   "age": "% years"
 }

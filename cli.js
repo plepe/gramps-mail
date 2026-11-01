@@ -158,8 +158,12 @@ fs.readFile(args.file, (err, body) => {
 
     const date = moment(today).add(days, 'days')
 
+    let in_days = translation['in_days'].replace('%', days)
+    if (translation['in_' + days + '_days']) {
+      in_days = translation['in_' + days + '_days']
+    }
 
-    console.log(date.format('LL') + ' (' + translation['in_days'].replace('%', days) + ')')
+    console.log(date.format('LL') + ' (' + in_days + ')')
     list.forEach(item => console.log('- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + translation['age'].replace('%', item.anniversary) + ')'))
     console.log()
   })
