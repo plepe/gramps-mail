@@ -1,6 +1,24 @@
 {
+  "name": "gramps-mail",
+  "version": "1.0.0",
+  "description": "Reads a GRAMPS XML Export and creates a mail with upcoming anniversaries",
+  "main": "cli.js",
   "dependencies": {
     "jsdom": "^30.1.3",
     "moment": "^2.31.0"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plepe/gramps-mail.git"
+  },
+  "author": "Stephan Bösch-Plepelits <skunk@xover.mud.at>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/plepe/gramps-mail/issues"
+  },
+  "homepage": "https://github.com/plepe/gramps-mail#readme"
 }
