@@ -8,7 +8,6 @@ const ArgumentParser = require('argparse').ArgumentParser
 const today = moment()
 const year = new Date().getFullYear()
 const nextYear = year + 1
-const daysInFuture = 31
 
 const events = {}
 const entities = {}
@@ -23,9 +22,20 @@ parser.add_argument('file', {
   help: 'Pfad einer gramps Datei',
 })
 
+parser.add_argument('-d', '--days', {
+  help: 'Liste Jahrestage in den nächsten n Tagen',
+  default: 14
+})
+
+parser.add_argument('-e', '--events', {
+  help: 'Liste nur die angegebenen Event-Typen (engl. Original-Werte; komma-separiert). Leerer String für alle Events.',
+  default: 'Birth,Death,Marriage'
+})
+
 const args = parser.parse_args()
 
-const showOnlyEventTypes = ['Birth', 'Death', 'Marriage']
+const daysInFuture = args.days
+const showOnlyEventTypes = args.events ? args.events.split(',') : null
 
 fs.readFile(args.file, (err, body) => {
   const dom = new JSDOM(body.toString(), {
@@ -36,7 +46,7 @@ fs.readFile(args.file, (err, body) => {
   Array.from(document.getElementsByTagName('event')).forEach(event => {
     const type = getTextContent(event, 'type')
 
-    if (!showOnlyEventTypes.includes(type)) {
+    if (showOnlyEventTypes && !showOnlyEventTypes.includes(type)) {
       return
     }
 
