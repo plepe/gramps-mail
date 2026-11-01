@@ -5,6 +5,7 @@ const jsdom = require("jsdom")
 const { JSDOM } = jsdom
 const moment = require('moment')
 const ArgumentParser = require('argparse').ArgumentParser
+const yaml = require('js-yaml')
 
 const events = {}
 const entities = {}
@@ -17,6 +18,11 @@ const parser = new ArgumentParser({
 
 parser.add_argument('file', {
   help: 'Pfad einer gramps Datei',
+})
+
+parser.add_argument('-c', '--config', {
+  help: 'Config-File',
+  default: 'config.yaml'
 })
 
 parser.add_argument('-d', '--days', {
@@ -52,6 +58,8 @@ const years = [year]
 for (i = 0; i < Math.ceil(daysInFuture / 365); i++) {
   years.push(year + i + 1)
 }
+
+const config = yaml.load(fs.readFileSync('config.yaml'))
 
 fs.readFile(args.file, (err, body) => {
   body = zlib.gunzip(body, (err, body) => {
