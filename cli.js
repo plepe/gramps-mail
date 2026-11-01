@@ -69,10 +69,12 @@ loadDatabase (args.file, (err, data) => {
     process.exit(1)
   }
 
-  run(data)
+  config.mails.forEach(mail:onfig => {
+    run(data, mailConfig)
+  })
 })
 
-function run (data) {
+function run (data, mailConfig) {
   events = data.events
   entities = data.entities
   const upcoming = []
@@ -133,14 +135,12 @@ function run (data) {
     text += '\n'
   })
 
-  config.mails.forEach(mail => {
-    transporter.sendMail({
-      from: config.smtp.from, // sender address
-      to: mail.to, // list of recipients
-      subject: "Kommende Jahrestage", // subject line
-      text
-    }, (err) => console.error(err));
-  })
+  transporter.sendMail({
+    from: config.smtp.from, // sender address
+    to: mailConfig.to, // list of recipients
+    subject: "Kommende Jahrestage", // subject line
+    text
+  }, (err) => console.error(err));
 }
 
 function getEventEntities (eventHandle) {
