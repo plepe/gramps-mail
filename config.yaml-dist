@@ -7,5 +7,14 @@ smtp:
     user: example
     pass: password
 
+default:
+  days: 14
+  events: 'Birth,Death,Marriage'
+  language: en
+
 mails:
-- to: user@example.com
+- to: user1@example.com
+
+- to: user2@example.com
+  language: de
+  days: 31

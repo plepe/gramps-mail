@@ -69,7 +69,8 @@ loadDatabase (args.file, (err, data) => {
     process.exit(1)
   }
 
-  config.mails.forEach(mail:onfig => {
+  config.mails.forEach(mail => {
+    const mailConfig = { ...config.default ?? {}, ...mail }
     run(data, mailConfig)
   })
 })
