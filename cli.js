@@ -5,7 +5,7 @@ const { JSDOM } = jsdom
 const moment = require('moment')
 const ArgumentParser = require('argparse').ArgumentParser
 
-const today = moment()
+const today = moment(moment().format('YYYY-MM-DD'))
 const year = new Date().getFullYear()
 const nextYear = year + 1
 
