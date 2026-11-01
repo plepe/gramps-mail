@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer")
 const yaml = require('js-yaml')
 
 const loadDatabase = require('./src/loadDatabase.js')
+const compileText = require('./src/compileText.js')
 
 let events
 let entities
@@ -46,19 +47,15 @@ parser.add_argument('--today', {
 
 const args = parser.parse_args()
 
-const daysInFuture = args.days
 const showOnlyEventTypes = args.events ? args.events.split(',') : null
-const translation = JSON.parse(fs.readFileSync('lang/' + args.language + '.json'))
-moment.locale(args.language)
-const today = args.today === 'today' ? moment(moment().format('YYYY-MM-DD')) : moment(args.today)
-
-const year = parseInt(moment(today).format('YYYY'))
-const years = [year]
-for (i = 0; i < Math.ceil(daysInFuture / 365); i++) {
-  years.push(year + i + 1)
-}
 
 const config = yaml.load(fs.readFileSync('config.yaml'))
+
+config.default = {
+  days: args.days,
+  language: args.language,
+  events: showOnlyEventTypes
+}
 
 // Create a transporter using SMTP
 const transporter = nodemailer.createTransport(config.smtp)
@@ -76,74 +73,14 @@ loadDatabase (args.file, (err, data) => {
 })
 
 function run (data, mailConfig) {
-  events = data.events
-  entities = data.entities
-  const upcoming = []
+  compileText (data, mailConfig, (err, text) => {
+    if (err) { return console.error(err) }
 
-  Object.values(events).forEach(event => {
-    if (!event.date || event.date.length < 10) {
-      return
-    }
-
-    const days = years.map(y => {
-      const n = moment(y + event.date.substr(4))
-      const days = n.diff(today, 'days')
-
-      if (days < 0 || days >= daysInFuture) {
-        return
-      }
-
-      const anniversary = y - event.date.substr(0, 4)
-
-      if (!upcoming[days]) {
-        upcoming[days] = []
-      }
-
-      const entities = getEventEntities(event.handle)
-      entities.forEach(person => {
-        upcoming[days].push({
-          entity: person,
-          event,
-          anniversary
-        })
-      })
-    })
+    transporter.sendMail({
+      from: config.smtp.from, // sender address
+      to: mailConfig.to, // list of recipients
+      subject: "Kommende Jahrestage", // subject line
+      text
+    }, (err) => console.error(err));
   })
-
-  let text = ''
-  upcoming.forEach((list, days) => {
-    if (!list || !list.length) {
-      return
-    }
-
-    const date = moment(today).add(days, 'days')
-
-    let in_days = translation['in_days'].replace('%', days)
-    if (translation['in_' + days + '_days']) {
-      in_days = translation['in_' + days + '_days']
-    }
-
-    text += date.format('LL') + ' (' + in_days + ')\n'
-    list.forEach(item => {
-      let age = translation['age'].replace('%', item.anniversary)
-      if (translation['age_' + item.anniversary]) {
-        age = translation['age_' + item.anniversary]
-      }
-
-      text += '- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + age + ')\n'
-    })
-
-    text += '\n'
-  })
-
-  transporter.sendMail({
-    from: config.smtp.from, // sender address
-    to: mailConfig.to, // list of recipients
-    subject: "Kommende Jahrestage", // subject line
-    text
-  }, (err) => console.error(err));
-}
-
-function getEventEntities (eventHandle) {
-  return Object.values(entities).filter(person => person.events.includes(eventHandle))
 }
