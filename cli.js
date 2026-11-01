@@ -32,10 +32,16 @@ parser.add_argument('-e', '--events', {
   default: 'Birth,Death,Marriage'
 })
 
+parser.add_argument('-l', '--language', {
+  help: 'Sprache (Kürzel, z.B. "de")',
+  default: 'en'
+})
+
 const args = parser.parse_args()
 
 const daysInFuture = args.days
 const showOnlyEventTypes = args.events ? args.events.split(',') : null
+const translation = JSON.parse(fs.readFileSync('lang/' + args.language + '.json'))
 
 fs.readFile(args.file, (err, body) => {
   const dom = new JSDOM(body.toString(), {
@@ -147,8 +153,8 @@ fs.readFile(args.file, (err, body) => {
     const date = moment().add(days, 'days')
 
     if (list.length) {
-      console.log(date.format('ll') + ' (in ' + days + ' Tagen)')
-      list.forEach(item => console.log('- ' + item.entity.name + ' (' + item.event.type + ', ' + item.anniversary + ' Jahre)'))
+      console.log(date.format('ll') + ' (' + translation['in_days'].replace('%', days) + ')')
+      list.forEach(item => console.log('- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + translation['age'].replace('%', item.anniversary) + ')'))
       console.log()
     }
   })
