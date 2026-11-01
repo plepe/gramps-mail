@@ -6,5 +6,6 @@
   "in_0_days": "heute",
   "in_1_days": "morgen",
   "in_2_days": "übermorgen",
-  "age": "% Jahre"
+  "age": "% Jahre",
+  "age_1": "1 Jahr"
 }

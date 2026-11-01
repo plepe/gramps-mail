@@ -159,7 +159,14 @@ fs.readFile(args.file, (err, body) => {
     }
 
     console.log(date.format('LL') + ' (' + in_days + ')')
-    list.forEach(item => console.log('- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + translation['age'].replace('%', item.anniversary) + ')'))
+    list.forEach(item => {
+      let age = translation['age'].replace('%', item.anniversary)
+      if (translation['age_' + item.anniversary]) {
+        age = translation['age_' + item.anniversary]
+      }
+
+      console.log('- ' + item.entity.name + ' (' + (translation[item.event.type] ?? item.event.type) + ', ' + age + ')')
+    })
     console.log()
   })
 })

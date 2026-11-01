@@ -5,5 +5,6 @@
   "in_days": "in % days",
   "in_0_days": "today",
   "in_1_days": "tomorrow",
-  "age": "% years"
+  "age": "% years",
+  "age_1": "1 year"
 }
