@@ -55,6 +55,10 @@ function run (data, mailConfig) {
   compileText (data, mailConfig, (err, text) => {
     if (err) { return console.error(err) }
 
+    if (config.smtp.signature) {
+      text += '-- \n' + config.smtp.signature
+    }
+
     transporter.sendMail({
       from: config.smtp.from, // sender address
       to: mailConfig.to, // list of recipients

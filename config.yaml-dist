@@ -6,6 +6,8 @@ smtp:
   auth:
     user: example
     pass: password
+  signature: |
+    Gramps-Mailer - https://gramps.example.com
 
 default:
   days: 14
