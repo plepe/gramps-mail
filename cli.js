@@ -60,7 +60,7 @@ fs.readFile(args.file, (err, body) => {
 })
 
 function run (body) {
-  const dom = new JSDOM(body.toString(), {
+  const dom = new JSDOM(body, {
     contentType: 'application/xml'
   })
   const document = dom.window.document
