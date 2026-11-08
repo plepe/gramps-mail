@@ -14,7 +14,7 @@ module.exports = function compileText (data, mailConfig, callback) {
 }
 
 function run (data, mailConfig, translation, callback) {
-  const today = mailConfig.today === 'today' ? moment(moment().format('YYYY-MM-DD')) : moment(mailConfig.today)
+  const today = (mailConfig.today === 'today' || !mailConfig.today) ? moment(moment().format('YYYY-MM-DD')) : moment(mailConfig.today)
 
   const year = parseInt(moment(today).format('YYYY'))
   const years = [year]
