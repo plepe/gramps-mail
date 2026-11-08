@@ -4,6 +4,7 @@ const moment = require('moment')
 const ArgumentParser = require('argparse').ArgumentParser
 const nodemailer = require("nodemailer")
 const yaml = require('js-yaml')
+const async = require('async')
 
 const loadDatabase = require('./src/loadDatabase.js')
 const compileText = require('./src/compileText.js')
@@ -45,15 +46,18 @@ loadDatabase (args.file, (err, data) => {
     process.exit(1)
   }
 
-  config.mails.forEach(mail => {
+  async.eachSeries(config.mails, (mail, done) => {
     const mailConfig = { ...config.default ?? {}, ...mail }
-    run(data, mailConfig)
+    run(data, mailConfig, done)
   })
 })
 
-function run (data, mailConfig) {
+function run (data, mailConfig, callback) {
   compileText (data, mailConfig, (err, text) => {
-    if (err) { return console.error(err) }
+    if (err) {
+      console.error(err)
+      return callback()
+    }
 
     if (config.smtp.signature) {
       text += '-- \n' + config.smtp.signature
@@ -64,6 +68,12 @@ function run (data, mailConfig) {
       to: mailConfig.to, // list of recipients
       subject: "Kommende Jahrestage", // subject line
       text
-    }, (err) => console.error(err));
+    }, (err) => {
+      if (err) {
+        console.error(err)
+      }
+
+      callback()
+    });
   })
 }
